@@ -1,0 +1,22 @@
+{
+  "name": "jikan",
+  "version": "1.0.0",
+  "description": "Discord bot for planning, organization, and reminders.",
+  "main": "jikan.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/very-amused/jikan.git"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/very-amused/jikan/issues"
+  },
+  "homepage": "https://github.com/very-amused/jikan#readme",
+  "dependencies": {
+    "discord.js": "^11.5.1"
+  }
+}

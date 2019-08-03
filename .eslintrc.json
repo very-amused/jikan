@@ -1,0 +1,19 @@
+{
+	"extends": "eslint:recommended",
+	"env": {
+		"node": true,
+		"es6": true
+	},
+	"parserOptions": {
+		"ecmaVersion": 2017
+	},
+	"rules": {
+		"brace-style": ["error", "stroustrup"],
+		"no-var": 2,
+		"one-var": ["error", "never"],
+		"prefer-const": 2,
+		"no-console": 1,
+		"quotes": ["error", "single"],
+		"semi": 2
+	}
+}
