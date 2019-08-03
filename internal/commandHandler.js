@@ -13,17 +13,13 @@ exports.loadCommands = function() {
             // Parsing
             file = file.split('.')[0];
             let ownerCommand;
-            let commandName;
             /* Owner command files start with the prefix 'owner_', so if the filename begins with that prefix
             the command name is parsed differently and the command is loaded to a different object
             for owner only commands */
             if (file.startsWith('owner_')) {
                 ownerCommand = true;
-                commandName = file.split('_'[1]);
             }
-            else {
-                commandName = file;
-            }
+            const commandName = ownerCommand ? file.split('_')[1] : file;
 
             // Load owner only commands
             if (ownerCommand) {

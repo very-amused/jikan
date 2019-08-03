@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/very-amused/jikan#readme",
   "dependencies": {
-    "discord.js": "^11.5.1"
+    "discord.js": "^11.5.1",
+    "mariadb": "^2.1.0"
   }
 }
