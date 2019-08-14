@@ -37,8 +37,8 @@ client.on('message', async message => {
             // Run the command
 			await commands[command].run(args, client, message);
 		}
-            // Some commands are reserved for use by bot owners
-            else if (command in ownerCommands && owners.includes(message.author.id)) {
+        // Some commands are reserved for use by bot owners
+        else if (command in ownerCommands && owners.includes(message.author.id)) {
 			await ownerCommands[command].run(args, client, message);
 		}
 	}
