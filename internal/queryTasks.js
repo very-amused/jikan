@@ -24,13 +24,8 @@ exports.queryTasks = async function(pool, client) {
         the SQL DATETIME format doesn't allow a UTC offset to be stored along with timestamps */
         const timestamp = moment.utc(`${task.Timestamp}+0000`);
         const now = moment.utc();
-        
-        // eslint-disable-next-line
-        console.log(`Timestamp: ${timestamp}
-        now: ${now}`);
-
-        if (now.isSameOrAfter(timestamp)) { // If the timestamp has elapsed
-            // Send the user a message reminder of their task
+        // If the timestamp has elapsed, send the user a reminder of their task
+        if (now.isSameOrAfter(timestamp)) { 
             client.users.get(task.UserID).send({embed: {
                 color: 0x00bfff,
                 title: 'Reminder:',
