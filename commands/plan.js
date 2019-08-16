@@ -21,15 +21,26 @@ exports.run = async function(args, client, message) {
     }
     const timeDistance = args[1].trim();
 
-    // Parse the days, hours, and minutes values from the command
-    let days = parseInt(timeDistance.match(/\w*d\b|\w* days\b/));
-    days = days ? days : 0;
-    let hours = parseInt(timeDistance.match(/\w*h\b|\w* hours\b/));
-    hours = hours ? hours : 0;
-    let minutes = parseInt(timeDistance.match(/\w*m\b|\w* minutes\b/));
-    minutes = minutes ? minutes : 0;
+    function parseTimeIncrement(increment) {
+        /* Generate regex to select the correct increment from the message, then parse the integer
+        For example, if 'seconds' is provided as the increment,
+        it will select values such as 5s or 10 seconds */
+        const regex = new RegExp(`\\d${increment.charAt(0)}\\b|\\d ${increment}\\b`);
+        let parsed = parseInt(timeDistance.match(regex));
 
-    if (!days && !hours && !minutes) {
+        // Set the value to 0 if none of that increment can be parsed
+        parsed = parsed ? parsed : 0;
+        return parsed;
+    }
+
+    // Parse the days, hours, minutes, and seconds values from the command
+    const days = parseTimeIncrement('days');
+    const hours = parseTimeIncrement('hours');
+    const minutes = parseTimeIncrement('minutes');
+    const seconds = parseTimeIncrement('seconds');
+
+    // Throw an error if no timestamp data can be parsed
+    if (!(days || hours || minutes || seconds)) {
         throw 'A validtimestamp either can\'t be found or isn\'t specified';
     }
 
@@ -37,28 +48,30 @@ exports.run = async function(args, client, message) {
     const difference = {
         days: days,
         hours: hours,
-        minutes: minutes
+        minutes: minutes,
+        seconds: seconds
     };
 
-    // Create a UTC timestamp specifying when the task is planned for
+    // Create a local and UTC timestamp specifying when the task is planned for
     const moment = require('moment');
-    const UTCTimestamp = moment.utc().add(difference).format('YYYY-MM-DD hh:mm:ss');
+    const UTCTimestamp = moment.utc().add(difference).format('YYYY-MM-DD HH:mm:ss');
+    const localTimestamp = moment().add(difference).format('YYYY-MM-DD HH:mm:ss');
 
     // Create an embed template
     const embed = {
         color: 0x00bfff,
         title: 'Plan created!',
-        description: `I'll remind you to ${task} in...`,
+        description: `I'll remind you to \`${task}\` in...`,
         fields: [],
         footer: {
-            text: `UTC Timestamp: ${UTCTimestamp}`
+            text: `Local Timestamp: ${localTimestamp}, UTC Timestamp: ${UTCTimestamp}`
         }
     };
 
-    // Add corresponding fields for days, hours, and minutes in the embed
-    for (const i in difference) {
-        if (difference[i]) {
-            embed.fields.push({
+    // Add corresponding fields for days, hours, minutes, and seconds in the embed
+    for (const i in difference) { // For each key-value pair in the difference object
+        if (difference[i]) { // If the value isn't 0
+            embed.fields.push({ // Add a field for it to the embed
                 // Capitalize the string and add a colon to the end
                 name: `${i.charAt(0).toUpperCase()}${i.slice(1)}:`,
                 value: difference[i]
