@@ -19,10 +19,7 @@ exports.queryTasks = async function(pool, client) {
     // Use moment to check if each timestamp has elapsed, and remind the user of their task if it has
     const moment = require('moment');
     tasks.forEach(async task => {
-        /* The +0000 offset from UTC must be concatenated to the timestamp before parsing it,
-        because an offset equivalent to the machine's localtime is assumed when one isn't specified, and 
-        the SQL DATETIME format doesn't allow a UTC offset to be stored along with timestamps */
-        const timestamp = moment.utc(`${task.Timestamp}+0000`);
+        const timestamp = moment.utc(task.Timestamp);
         const now = moment.utc();
         // If the timestamp has elapsed, send the user a reminder of their task
         if (now.isSameOrAfter(timestamp)) { 

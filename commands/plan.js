@@ -25,7 +25,7 @@ exports.run = async function(args, client, message) {
         /* Generate regex to select the correct increment from the message, then parse the integer
         For example, if 'seconds' is provided as the increment,
         it will select values such as 5s or 10 seconds */
-        const regex = new RegExp(`\\d${increment.charAt(0)}\\b|\\d ${increment}\\b`);
+        const regex = new RegExp(`\\d+${increment.charAt(0)}\\b|\\d+ ${increment}\\b`);
         let parsed = parseInt(timeDistance.match(regex));
 
         // Set the value to 0 if none of that increment can be parsed
@@ -82,7 +82,7 @@ exports.run = async function(args, client, message) {
     // Insert the timestamp into the db
     const conn = await client.pool.getConnection();
     conn.query('INSERT INTO Tasks (Timestamp, Message, UserID) VALUES (?, ?, ?)',
-    [UTCTimestamp, task, message.author.id]);
+    [`${UTCTimestamp}+0000`, task, message.author.id]);
 
     await message.channel.send({embed: embed});
 };
