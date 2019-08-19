@@ -85,4 +85,5 @@ exports.run = async function(args, client, message) {
     [`${UTCTimestamp}+0000`, task, message.author.id]);
 
     await message.channel.send({embed: embed});
+    conn.end();
 };

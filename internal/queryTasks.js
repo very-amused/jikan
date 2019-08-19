@@ -1,4 +1,4 @@
-/* Function to select an sql table as an array, where each item is an object
+/* Function to select an SQL table as an array, where each item is an object
 containing key value pairs that correspond to the data entries in a row */
 async function selectTableAsArray(tableName, conn) {
     const table = await conn.query(`SELECT * FROM ${tableName}`);
