@@ -1,10 +1,10 @@
 exports.run = async function(args, client, message) {
     // Check if the command is formatted properly
     if (!args.length) {
-        throw 'No task to plan is supplied';
+        throw 'No plan to plan is supplied';
     }
     else if (!args.includes('in')) {
-        throw `You must use the keyword 'in' to specify a time to be reminded of your task\n
+        throw `You must use the keyword 'in' to specify a time to be reminded of your plan\n
         Example: \`\`\`!plan improve my bot in 2h 30m\`\`\``;
     }
 
@@ -15,9 +15,9 @@ exports.run = async function(args, client, message) {
     if (!args[1]) {
         throw 'No timestamp is given for the reminder';
     }
-    const task = args[0].trim();
-    if (task.length > 1000) {
-        throw 'Maximum length for a message is 1,000 characters';
+    const plan = args[0].trim();
+    if (plan.length > 256) {
+        throw 'Maximum length for a message is 256 characters';
     }
     const timeDistance = args[1].trim();
 
@@ -52,7 +52,7 @@ exports.run = async function(args, client, message) {
         seconds: seconds
     };
 
-    // Create a local and UTC timestamp specifying when the task is planned for
+    // Create a local and UTC timestamp specifying when the plan is planned for
     const moment = require('moment');
     const UTCTimestamp = moment.utc().add(difference).format('YYYY-MM-DD HH:mm:ss');
     const localTimestamp = moment().add(difference).format('YYYY-MM-DD HH:mm:ss');
@@ -61,7 +61,7 @@ exports.run = async function(args, client, message) {
     const embed = {
         color: 0x00bfff,
         title: 'Plan created!',
-        description: `I'll remind you to \`${task}\` in...`,
+        description: `I'll remind you to \`${plan}\` in...`,
         fields: [],
         footer: {
             text: `Local Timestamp: ${localTimestamp}, UTC Timestamp: ${UTCTimestamp}`
@@ -81,8 +81,8 @@ exports.run = async function(args, client, message) {
 
     // Insert the timestamp into the db
     const conn = await client.pool.getConnection();
-    conn.query('INSERT INTO Tasks (Timestamp, Message, UserID) VALUES (?, ?, ?)',
-    [`${UTCTimestamp}+0000`, task, message.author.id]);
+    conn.query('INSERT INTO Plans (Timestamp, Message, UserID) VALUES (?, ?, ?)',
+    [`${UTCTimestamp}+0000`, plan, message.author.id]);
 
     await message.channel.send({embed: embed});
     conn.end();

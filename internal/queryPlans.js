@@ -9,29 +9,29 @@ async function selectTableAsArray(tableName, conn) {
     return dataArray;
 }
 
-exports.queryTasks = async function(pool, client) {
+exports.queryPlans = async function(pool, client) {
     // Connect to the db
     const conn = await pool.getConnection();
 
     // Select all tasks in the Tasks table of the database
-    const tasks = await selectTableAsArray('Tasks', conn);
+    const plans = await selectTableAsArray('Plans', conn);
 
     // Use moment to check if each timestamp has elapsed, and remind the user of their task if it has
     const moment = require('moment');
-    tasks.forEach(async task => {
-        const timestamp = moment.utc(task.Timestamp);
+    plans.forEach(async plan => {
+        const timestamp = moment.utc(plan.Timestamp);
         const now = moment.utc();
         // If the timestamp has elapsed, send the user a reminder of their task
         if (now.isSameOrAfter(timestamp)) { 
-            client.users.get(task.UserID).send({embed: {
+            client.users.get(plan.UserID).send({embed: {
                 color: 0x00bfff,
                 title: 'Reminder:',
-                description: task.Message
+                description: plan.Message
             }});
 
             // Delete the row from the table
-            await conn.query('DELETE FROM Tasks WHERE Timestamp = ? AND UserID = ?',
-            [task.Timestamp, task.UserID]);
+            await conn.query('DELETE FROM Plans WHERE Timestamp = ? AND UserID = ?',
+            [plan.Timestamp, plan.UserID]);
         }
     });
 

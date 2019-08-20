@@ -51,7 +51,7 @@ exports.run = async function(args, client, message) {
     }
 
     // Select the user's encrypted private plans from the database
-    const privatePlans = await selectRowsConditional('Private_Tasks',
+    const privatePlans = await selectRowsConditional('Private_Plans',
     `UserID = ${message.author.id}`, conn);
     conn.end(); // The database connection is closed because it no longer needs to be used
 
@@ -62,17 +62,17 @@ exports.run = async function(args, client, message) {
         fields: []
     };
 
-    privatePlans.forEach(row => {
-        const encryptedMessage = row.Message;
+    privatePlans.forEach(plan => {
+        const encryptedMessage = plan.Message;
 
         const moment = require('moment');
-        const timestamp = moment.utc(row.Timestamp);
+        const timestamp = moment.utc(plan.Timestamp);
         const now = moment.utc();
         /* The line below generates a human-friendly string stating the remaining time
-        before a reminder of a task will be sent */
+        before a reminder of a plan will be sent */
         const distance = moment.duration(timestamp.diff(now)).humanize(true);
 
-        // Decrypt each task message using the user's private key
+        // Decrypt each plan message using the user's private key
         const message = crypto.privateDecrypt(privateKey, encryptedMessage).toString();
         
         embed.fields.push({

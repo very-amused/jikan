@@ -5,18 +5,17 @@ exports.run = async function(args, client, message) {
     // Check if the user already has a key pair generated (a password set)
     const passwordCheck = await conn.query('SELECT UserID FROM Keys_ WHERE UserID = ?',
     [message.author.id]);
+    conn.end();
     if (!passwordCheck.length) {
-        conn.end();
         throw 'You need to have a password set to use this command. You can set one using `!setpassword`';
     }
-    conn.end();
 
     // Check if the command is formatted properly
     if (!args.length) {
-        throw 'No task to plan is supplied';
+        throw 'No plan is supplied';
     }
     else if (!args.includes('in')) {
-        throw `You must use the keyword 'in' to specify a time to be reminded of your task\n
+        throw `You must use the keyword 'in' to specify a time to be reminded of your plan\n
         Example: \`\`\`!plan improve my bot in 2h 30m\`\`\``;
     }
 
@@ -27,8 +26,8 @@ exports.run = async function(args, client, message) {
     if (!args[1]) {
         throw 'No timestamp is given for the reminder';
     }
-    const task = args[0].trim();
-    if (task.length > 1000) {
+    const plan = args[0].trim();
+    if (plan.length > 1000) {
         throw 'Maximum length for a message is 1,000 characters';
     }
     const timeDistance = args[1].trim();
@@ -64,7 +63,7 @@ exports.run = async function(args, client, message) {
         seconds: seconds
     };
 
-    // Create a local and UTC timestamp specifying when the task is planned for
+    // Create a local and UTC timestamp specifying when the plan is set for
     const moment = require('moment');
     const UTCTimestamp = moment.utc().add(difference).format('YYYY-MM-DD HH:mm:ss');
     const localTimestamp = moment().add(difference).format('YYYY-MM-DD HH:mm:ss');
@@ -73,7 +72,7 @@ exports.run = async function(args, client, message) {
     const embed = {
         color: 0x00bfff,
         title: 'Private plan created!',
-        description: `I'll remind you to \`${task}\` in...`,
+        description: `I'll remind you to \`${plan}\` in...`,
         fields: [],
         footer: {
             text: `Local Timestamp: ${localTimestamp}, UTC Timestamp: ${UTCTimestamp}`
@@ -99,13 +98,13 @@ exports.run = async function(args, client, message) {
     [message.author.id]);
     publicKey = publicKey[0].PublicKey;
     // crypto.publicEncrypt() requires a buffer to encrypt, not a string
-    const encryptedTask = crypto.publicEncrypt(publicKey, Buffer.from(task));
+    const encryptedPlan = crypto.publicEncrypt(publicKey, Buffer.from(plan));
 
     // Insert the timestamp into the db
     conn = await client.pool.getConnection();
-    conn.query('INSERT INTO Private_Tasks (Timestamp, Message, UserID) VALUES (?, ?, ?)',
-    [`${UTCTimestamp}+0000`, encryptedTask, message.author.id]);
+    conn.query('INSERT INTO Private_Plans (Timestamp, Message, UserID) VALUES (?, ?, ?)',
+    [`${UTCTimestamp}+0000`, encryptedPlan, message.author.id]);
+    conn.end();
 
     await message.channel.send({embed: embed});
-    conn.end();
 };

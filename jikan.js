@@ -26,9 +26,9 @@ client.on('ready', () => {
 
 /* Function ran at a 1 second interval to query the database for tasks
 and send the user a reminder if the timestamp for a task has passed */
-const {queryTasks} = require('./internal/queryTasks');
+const {queryPlans} = require('./internal/queryPlans');
 setInterval(() => {
-    queryTasks(pool, client);
+    queryPlans(pool, client);
 }, 1000);
 
 client.on('message', async message => {
