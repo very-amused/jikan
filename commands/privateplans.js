@@ -1,6 +1,6 @@
 exports.run = async function(args, client, message) {
     // Function to select a column from an SQL table and convert it to an array
-    async function selectTableAsArrayConditional(table, condition, conn) {
+    async function selectRowsConditional(table, condition, conn) {
         const sqlColumn = await conn.query(`SELECT * FROM ${table} WHERE ${condition}`);
         const dataArray = [];
         sqlColumn.forEach(row => {
@@ -51,20 +51,20 @@ exports.run = async function(args, client, message) {
     }
 
     // Select the user's encrypted private plans from the database
-    const privatePlans = await selectTableAsArrayConditional('Private_Tasks',
+    const privatePlans = await selectRowsConditional('Private_Tasks',
     `UserID = ${message.author.id}`, conn);
+    conn.end(); // The database connection is closed because it no longer needs to be used
 
     // Create an embed template
     const embed = {
         color: 0x00bfff,
-        title: 'Your private (encrypted) tasks:',
+        title: 'Your private (encrypted) plans:',
         fields: []
     };
 
     privatePlans.forEach(row => {
         const encryptedMessage = row.Message;
 
-        // Convert the timestamp to the user's localtime
         const moment = require('moment');
         const timestamp = moment.utc(row.Timestamp);
         const now = moment.utc();
@@ -81,6 +81,11 @@ exports.run = async function(args, client, message) {
         });
     });
 
-    conn.end();
+    // Add a message if there are no plans
+    if (!privatePlans.length) {
+        embed.description = 'You have no current plans, you can create some with `!privateplan`';
+    }
+
+    // Send the user a list of their private plans in the form of an embed
     message.channel.send({embed: embed});
 };
