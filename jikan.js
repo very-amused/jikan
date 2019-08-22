@@ -34,7 +34,8 @@ setInterval(() => {
 
 client.on('message', async message => {
     const prefix = '!';
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
+    // Return if the message doesn't start with the prefix, it's from a bot, or it isn't a DM
+    if (!message.content.startsWith(prefix) || message.author.bot || message.channel.guild) return;
     
     // Get command args from messages
 	const command = message.content.slice(prefix.length).split(/ +/).shift().toLowerCase();
