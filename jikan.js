@@ -15,20 +15,21 @@ const pool = mariadb.createPool({
     password: process.env.MARIADB_PASS, // $MARIADB_PASS environment variable
     database: 'jikan_testing'
 });
+client.pool = pool; // Attach db pool to the client object
 
 client.login(token);
 
 // This is ran once all commands are loaded
 client.on('ready', () => {
     console.log('Jikan is up and ready for use!'); // eslint-disable-line no-console
-    client.pool = pool; // Attach db pool to the client
 });
 
-/* Function ran at a 1 second interval to query the database for tasks
-and send the user a reminder if the timestamp for a task has passed */
-const {queryPlans} = require('./internal/queryPlans');
+/* Functions run at a 1 second interval to query the database for plans
+and send the user a reminder if the timestamp for a plan has passed */
+const {queryPlans, queryPrivatePlans} = require('./internal/queryPlans');
 setInterval(() => {
     queryPlans(pool, client);
+    queryPrivatePlans(pool, client);
 }, 1000);
 
 client.on('message', async message => {

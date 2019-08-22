@@ -3,7 +3,7 @@ exports.run = async function(args, client, message) {
     if (!args.length) {
         throw 'No plan to plan is supplied';
     }
-    else if (!args.includes('in')) {
+    else if (!args.includes(' in ')) {
         throw `You must use the keyword 'in' to specify a time to be reminded of your plan\n
         Example: \`\`\`!plan improve my bot in 2h 30m\`\`\``;
     }
