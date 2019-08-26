@@ -1,13 +1,6 @@
 exports.run = async function(args, client, message) {
-    // Function to select a column from an SQL table and convert it to an array
-    async function selectRowsConditional(table, condition, conn) {
-        const sqlColumn = await conn.query(`SELECT * FROM ${table} WHERE ${condition}`);
-        const dataArray = [];
-        sqlColumn.forEach(row => {
-            dataArray.push(row);
-        }); // A forEach loop is used to convert the sql column to an array
-        return dataArray;
-    }
+    // Require SQL helper functions
+    const sqlHelper = require('../internal/sqlHelper');
 
     // Prompt the user for their password
     await message.channel.send({embed: {
@@ -51,8 +44,9 @@ exports.run = async function(args, client, message) {
     }
 
     // Select the user's encrypted private plans from the database
-    const privatePlans = await selectRowsConditional('Private_Plans',
-    `UserID = ${message.author.id}`, conn);
+    const privatePlansData = await conn.query('SELECT * FROM Private_Plans WHERE UserID = ?',
+    [message.author.id]);
+    const privatePlans = sqlHelper.dataToArray(privatePlansData);
     conn.end(); // The database connection is closed because it no longer needs to be used
 
     // Create an embed template

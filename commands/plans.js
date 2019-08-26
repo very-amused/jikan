@@ -1,18 +1,12 @@
 exports.run = async function(args, client, message) {
-    // Function to select a column from an SQL table and convert it to an array
-    async function selectRowsConditional(table, condition, conn) {
-        const sqlColumn = await conn.query(`SELECT * FROM ${table} WHERE ${condition}`);
-        const dataArray = [];
-        sqlColumn.forEach(row => {
-            dataArray.push(row);
-        }); // A forEach loop is used to convert the sql column to an array
-        return dataArray;
-    }
+    // Require SQL helper functions
+    const sqlHelper = require('../internal/sqlHelper');
 
     // Select the user's plans from the database
     const conn = await client.pool.getConnection();
-    const plans = await selectRowsConditional('Plans',
-    `UserID = ${message.author.id}`, conn);
+    const plansData = await conn.query('SELECT * FROM Plans WHERE UserID = ?',
+    [message.author.id]);
+    const plans = await sqlHelper.dataToArray(plansData);
     conn.end(); // The database connection is closed because it no longer needs to be used
 
     // Create an embed template
